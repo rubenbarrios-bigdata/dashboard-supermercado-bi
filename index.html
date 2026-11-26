@@ -83,7 +83,7 @@
       display: flex;
       flex-direction: column;
       width: 1520px;
-      height: 855px;
+      height: 780px;
       overflow: hidden;
       transform-origin: top left;
       position: absolute;
@@ -1727,9 +1727,9 @@
       chSub.setOption({
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: tc.tooltipBg, textStyle: { color: tc.tooltipText, fontSize: 11 } },
         legend: { data: ['Ventas (USD)', 'Utilidad (USD)'], textStyle: { color: tc.text, fontSize: 10.5 }, top: 0 },
-        grid: { left: 85, right: 24, top: 26, bottom: 20 },
-        xAxis: { type: 'value', axisLabel: { color: tc.muted, fontSize: 10, formatter: v => fmtUSDCompact.format(v) }, splitLine: { lineStyle: { color: tc.grid } } },
-        yAxis: { type: 'category', data: sortedSub.map(s => s.name), axisLabel: { color: tc.text, fontSize: 9.5, fontWeight: 500 }, interval: 0 },
+        grid: { left: 85, right: 24, top: 22, bottom: 26 },
+        xAxis: { type: 'value', axisLabel: { color: tc.muted, fontSize: 9.5, formatter: v => fmtUSDCompact.format(v) }, splitLine: { lineStyle: { color: tc.grid } } },
+        yAxis: { type: 'category', data: sortedSub.map(s => s.name), axisLabel: { color: tc.text, fontSize: 9, fontWeight: 500 }, interval: 0 },
         series: [
           { name: 'Ventas (USD)', type: 'bar', data: sortedSub.map(s => Number(s.ventas.toFixed(2))), itemStyle: { color: '#3b82f6', borderRadius: [0, 2, 2, 0] } },
           {
@@ -1750,8 +1750,8 @@
       chDisc.setOption({
         tooltip: { trigger: 'axis', backgroundColor: tc.tooltipBg, textStyle: { color: tc.tooltipText, fontSize: 11 } },
         legend: { data: ['Ventas (USD)', 'Utilidad Neta (USD)', 'Margen (%)'], textStyle: { color: tc.text, fontSize: 10.5 }, top: 0 },
-        grid: { left: 55, right: 44, top: 28, bottom: 22 },
-        xAxis: { type: 'category', data: discBuckets.map(b => b.label), axisLabel: { color: tc.text, fontSize: 10, fontWeight: 500 } },
+        grid: { left: 55, right: 44, top: 24, bottom: 28 },
+        xAxis: { type: 'category', data: discBuckets.map(b => b.label), axisLabel: { color: tc.text, fontSize: 9.5, fontWeight: 500, interval: 0 } },
         yAxis: [
           { type: 'value', axisLabel: { color: tc.muted, fontSize: 10, formatter: v => fmtUSDCompact.format(v) }, splitLine: { lineStyle: { color: tc.grid } } },
           { type: 'value', axisLabel: { color: tc.muted, fontSize: 10, formatter: '{value}%' }, splitLine: { show: false } }
@@ -2157,21 +2157,21 @@
       URL.revokeObjectURL(url);
     }
 
-    // Auto-scale 1520x855 master canvas to fit ANY Looker Studio iframe box without clipping
+    // Auto-scale 1520x780 master canvas to fit ANY Looker Studio iframe box without clipping
     function fitCanvasToIframe() {
       const shell = document.getElementById('app-shell');
       if (!shell) return;
       const baseW = 1520;
-      const baseH = 855;
+      const baseH = 780;
       const vw = document.documentElement.clientWidth || window.innerWidth;
       const vh = document.documentElement.clientHeight || window.innerHeight;
 
       const scaleX = vw / baseW;
-      const scaleY = vh / baseH;
+      const scaleY = (vh - 6) / baseH;
       const scale = Math.min(scaleX, scaleY);
 
       const offsetX = Math.max(0, (vw - baseW * scale) / 2);
-      const offsetY = Math.max(0, (vh - baseH * scale) / 2);
+      const offsetY = 2;
 
       shell.style.transform = `translate(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px) scale(${scale.toFixed(4)})`;
     }
