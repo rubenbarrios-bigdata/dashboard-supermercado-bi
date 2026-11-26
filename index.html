@@ -59,7 +59,9 @@
 
     html, body {
       width: 100%;
-      height: 100vh;
+      height: 100%;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-app);
@@ -68,21 +70,25 @@
       line-height: 1.3;
     }
 
-    /* Fixed 16:9 Viewport Shell tailored for Looker Studio (1366x768 up to 1920x1080) */
+    /* Fixed 16:9 Master Canvas (1520x855) that auto-scales proportionally to fit ANY Looker Studio iframe */
+    #scale-viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      background-color: var(--bg-app);
+    }
+
     .app-shell {
       display: flex;
       flex-direction: column;
-      width: 100%;
-      height: 100vh;
+      width: 1520px;
+      height: 855px;
       overflow: hidden;
-    }
-
-    /* Allow natural scroll only on very small screens (< 900px width or < 640px height) */
-    @media (max-width: 960px), (max-height: 640px) {
-      html, body, .app-shell {
-        height: auto;
-        overflow-y: auto;
-      }
+      transform-origin: top left;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     /* TOP HEADER (Ultra-Compact for Looker Studio 1160px-1200px iframe) */
@@ -674,7 +680,8 @@
   </style>
 </head>
 <body>
-<div class="app-shell">
+<div id="scale-viewport">
+<div class="app-shell" id="app-shell">
 
   <!-- TOP EXECUTIVE HEADER -->
   <header class="top-header">
@@ -1092,6 +1099,7 @@
     </section>
 
   </main>
+</div>
 </div>
 
   <!-- DATA ENGINE PAYLOAD -->
@@ -2149,13 +2157,38 @@
       URL.revokeObjectURL(url);
     }
 
+    // Auto-scale 1520x855 master canvas to fit ANY Looker Studio iframe box without clipping
+    function fitCanvasToIframe() {
+      const shell = document.getElementById('app-shell');
+      if (!shell) return;
+      const baseW = 1520;
+      const baseH = 855;
+      const vw = document.documentElement.clientWidth || window.innerWidth;
+      const vh = document.documentElement.clientHeight || window.innerHeight;
+
+      const scaleX = vw / baseW;
+      const scaleY = vh / baseH;
+      const scale = Math.min(scaleX, scaleY);
+
+      const offsetX = Math.max(0, (vw - baseW * scale) / 2);
+      const offsetY = Math.max(0, (vh - baseH * scale) / 2);
+
+      shell.style.transform = `translate(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px) scale(${scale.toFixed(4)})`;
+    }
+
     window.addEventListener('resize', () => {
+      fitCanvasToIframe();
       Object.values(charts).forEach(ch => ch && ch.resize());
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+      fitCanvasToIframe();
       initDropdowns();
       applyFilters();
+      setTimeout(() => {
+        fitCanvasToIframe();
+        Object.values(charts).forEach(ch => ch && ch.resize());
+      }, 120);
     });
   </script>
 </body>
